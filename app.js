@@ -230,30 +230,23 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPaperBackground(theme);
 
-    const frame = {
-      x: 110,
-      y: 110,
-      w: canvas.width - 220,
-      h: canvas.height - 220
+    const card = {
+      x: 88,
+      y: 84,
+      w: canvas.width - 176,
+      h: canvas.height - 168
     };
     const photoArea = {
-      x: frame.x + 80,
-      y: frame.y + 80,
-      w: frame.w - 160,
-      h: 1320
+      x: card.x + 54,
+      y: card.y + 54,
+      w: card.w - 108,
+      h: 1458
     };
 
-    ctx.fillStyle = theme.card;
-    roundRect(ctx, frame.x, frame.y, frame.w, frame.h, 22);
-    ctx.fill();
-
-    ctx.strokeStyle = theme.edge;
-    ctx.lineWidth = 1;
-    roundRect(ctx, frame.x + 1, frame.y + 1, frame.w - 2, frame.h - 2, 22);
-    ctx.stroke();
-
+    drawPosterCard(card, theme);
     drawPhoto(photoArea);
-    drawBottomPanel(frame, photoArea, theme, place, exif, solarTerm, code);
+    drawEditorialSeal(photoArea, place, theme);
+    drawBottomPanel(card, photoArea, theme, place, exif, solarTerm, code);
     syncExportPreview(`No. ${code}`);
   }
 
@@ -275,6 +268,27 @@
     ctx.restore();
   }
 
+  function drawPosterCard(card, theme) {
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.16)";
+    ctx.shadowBlur = 42;
+    ctx.shadowOffsetY = 22;
+    ctx.fillStyle = theme.card;
+    roundRect(ctx, card.x, card.y, card.w, card.h, 30);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.strokeStyle = theme.edge;
+    ctx.lineWidth = 1;
+    roundRect(ctx, card.x + 1, card.y + 1, card.w - 2, card.h - 2, 30);
+    ctx.stroke();
+    ctx.strokeStyle = theme.innerEdge;
+    roundRect(ctx, card.x + 18, card.y + 18, card.w - 36, card.h - 36, 22);
+    ctx.stroke();
+    ctx.restore();
+  }
+
   function drawPhoto(area) {
     const img = state.image;
     const ratio = Math.max(area.w / img.width, area.h / img.height);
@@ -292,91 +306,160 @@
     ctx.restore();
   }
 
-  function drawBottomPanel(frame, photoArea, theme, place, exif, solarTerm, code) {
-    const left = frame.x + 80;
-    const right = frame.x + frame.w - 80;
-    const baseY = photoArea.y + photoArea.h + 94;
+  function drawBottomPanel(card, photoArea, theme, place, exif, solarTerm, code) {
+    const left = card.x + 74;
+    const right = card.x + card.w - 74;
+    const top = photoArea.y + photoArea.h + 72;
 
-    ctx.fillStyle = theme.text;
-    ctx.font = "700 42px 'Segoe UI', 'Noto Sans SC', sans-serif";
-    ctx.fillText(place.name, left, baseY);
-
-    ctx.textAlign = "right";
-    ctx.fillText("HASSELBLAD", right, baseY);
-
-    ctx.font = "400 28px 'Segoe UI', 'Noto Sans SC', sans-serif";
-    ctx.fillStyle = theme.muted;
+    ctx.save();
     ctx.textAlign = "left";
-    ctx.fillText(formatCoordinate(exif.lat, exif.lng, true), left, baseY + 56);
-    ctx.textAlign = "right";
-    ctx.fillText(exif.cameraLabel, right, baseY + 56);
+    ctx.fillStyle = theme.text;
+    ctx.font = "700 28px 'Segoe UI', 'Noto Sans SC', sans-serif";
+    ctx.fillText(place.name, left, top);
 
+    ctx.textAlign = "right";
+    ctx.font = "700 25px 'Segoe UI', sans-serif";
+    ctx.fillText("HASSELBLAD", right, top);
+    ctx.fillStyle = theme.muted;
+    ctx.font = "400 18px 'Segoe UI', sans-serif";
+    ctx.fillText("NATURAL COLOR", right, top + 28);
+    ctx.restore();
+
+    drawScaleRule(left, right, top + 78, theme);
+
+    ctx.save();
+    ctx.textAlign = "left";
+    ctx.fillStyle = theme.muted;
+    ctx.font = "400 21px 'Segoe UI', 'Noto Sans SC', sans-serif";
+    ctx.fillText(formatCoordinate(exif.lat, exif.lng, true), left, top + 130);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = theme.poetry;
+    ctx.font = "300 54px 'Segoe UI', 'PingFang SC', sans-serif";
+    ctx.fillText(place.poem, canvas.width / 2, top + 266);
+    ctx.restore();
+
+    drawGoldSeal(place.shortSeal, left, top + 352);
+    drawFooterMeta(left, right, top + 402, theme, exif, solarTerm, code);
+  }
+
+  function drawScaleRule(left, right, y, theme) {
+    const width = right - left;
+    ctx.save();
     ctx.strokeStyle = theme.rule;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(left, baseY + 92.5);
-    ctx.lineTo(right, baseY + 92.5);
+    ctx.moveTo(left, y);
+    ctx.lineTo(right, y);
     ctx.stroke();
 
-    ctx.textAlign = "left";
-    ctx.font = "400 24px 'Segoe UI', 'Noto Sans SC', sans-serif";
-    ctx.fillStyle = theme.muted;
-    ctx.fillText(
-      `${exif.aperture}   ${exif.shutter}   ${exif.iso}   ${exif.focal}`,
-      left,
-      baseY + 142
-    );
+    for (let i = 0; i <= 48; i += 1) {
+      const x = left + (width / 48) * i;
+      const tick = i % 6 === 0 ? 16 : 8;
+      ctx.beginPath();
+      ctx.moveTo(x, y - tick / 2);
+      ctx.lineTo(x, y + tick / 2);
+      ctx.stroke();
+    }
 
-    ctx.textAlign = "right";
-    ctx.fillText(`${solarTerm} / ${formatDate(exif.captureDate)}`, right, baseY + 142);
-
-    ctx.textAlign = "left";
-    ctx.fillStyle = theme.poetry;
-    ctx.font = "300 36px 'Segoe UI', 'PingFang SC', sans-serif";
-    drawLetterSpacedText(place.poem, left, baseY + 240, 6);
-
-    drawGoldSeal(place.shortSeal, left, baseY + 338);
-    drawSerialBlock(code, right, baseY + 334, theme);
+    const center = left + width / 2;
+    ctx.beginPath();
+    ctx.arc(center, y, 15, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(center - 24, y);
+    ctx.lineTo(center + 24, y);
+    ctx.moveTo(center, y - 24);
+    ctx.lineTo(center, y + 24);
+    ctx.stroke();
+    ctx.restore();
   }
 
   function drawGoldSeal(text, x, y) {
     ctx.save();
-    const gradient = ctx.createLinearGradient(x, y - 32, x + 220, y + 32);
+    const gradient = ctx.createLinearGradient(x, y - 28, x + 180, y + 28);
     gradient.addColorStop(0, "#5e4822");
     gradient.addColorStop(0.48, "#f8df9c");
     gradient.addColorStop(1, "#7b5927");
     ctx.fillStyle = gradient;
-    ctx.font = "700 54px 'Segoe UI', 'Noto Sans SC', sans-serif";
+    ctx.font = "700 46px 'Segoe UI', 'Noto Sans SC', sans-serif";
     ctx.fillText(text, x, y);
-    ctx.strokeStyle = "rgba(96, 65, 14, 0.35)";
+    ctx.strokeStyle = "rgba(96, 65, 14, 0.24)";
     ctx.strokeText(text, x, y);
 
-    ctx.translate(x + 188, y - 42);
-    ctx.rotate(-0.08);
+    ctx.translate(x + 140, y - 46);
+    ctx.rotate(-0.06);
     ctx.strokeStyle = "rgba(161, 47, 36, 0.95)";
-    ctx.lineWidth = 4;
-    ctx.strokeRect(0, 0, 94, 94);
+    ctx.lineWidth = 3;
+    ctx.strokeRect(0, 0, 84, 84);
     ctx.fillStyle = "rgba(161, 47, 36, 0.12)";
-    ctx.fillRect(0, 0, 94, 94);
+    ctx.fillRect(0, 0, 84, 84);
     ctx.fillStyle = "rgba(161, 47, 36, 0.9)";
-    ctx.font = "700 26px 'Segoe UI', 'Noto Sans SC', sans-serif";
-    ctx.fillText("山河志", 9, 56);
+    ctx.font = "700 24px 'Segoe UI', 'Noto Sans SC', sans-serif";
+    ctx.fillText("山河志", 7, 50);
     ctx.restore();
   }
 
-  function drawSerialBlock(code, right, y, theme) {
-    const qrX = right - 144;
-    const qrY = y - 72;
-    drawMicroMatrix(qrX, qrY, 120, code);
+  function drawFooterMeta(left, right, y, theme, exif, solarTerm, code) {
+    const qrX = right - 120;
+    const qrY = y - 116;
 
+    ctx.save();
+    ctx.textAlign = "left";
+    ctx.fillStyle = theme.text;
+    ctx.font = "400 20px 'Segoe UI', sans-serif";
+    ctx.fillText(`${exif.aperture}   ${exif.shutter}   ${exif.iso}   ${exif.focal}`, left, y);
+    ctx.fillStyle = theme.muted;
+    ctx.font = "400 18px 'Segoe UI', sans-serif";
+    ctx.fillText(`${solarTerm} / ${formatDate(exif.captureDate)}`, left, y + 34);
+    ctx.restore();
+
+    drawMicroMatrix(qrX, qrY, 92, code);
+
+    ctx.save();
     ctx.textAlign = "right";
     ctx.fillStyle = theme.text;
-    ctx.font = "400 26px 'Consolas', 'Courier New', monospace";
-    ctx.fillText(`NO. ${code}`, right, y - 92);
-
+    ctx.font = "400 22px 'Consolas', 'Courier New', monospace";
+    ctx.fillText(`NO. ${code}`, right, y - 18);
     ctx.fillStyle = theme.muted;
-    ctx.font = "400 18px 'Consolas', 'Courier New', monospace";
-    ctx.fillText("SCAN / CYBERHASSEL", right, y + 72);
+    ctx.font = "400 16px 'Consolas', 'Courier New', monospace";
+    ctx.fillText("ARCHIVE / CYBERHASSEL", right, y + 18);
+    ctx.restore();
+  }
+
+  function drawEditorialSeal(photoArea, place, theme) {
+    const cx = photoArea.x + photoArea.w - 190;
+    const cy = photoArea.y + 170;
+
+    ctx.save();
+    ctx.strokeStyle = theme.gold;
+    ctx.fillStyle = theme.goldSoft;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 104, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 84, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.font = "700 26px 'Segoe UI', 'Noto Sans SC', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(place.shortSeal, cx, cy + 12);
+
+    ctx.font = "400 16px 'Segoe UI', sans-serif";
+    ctx.fillText("CYBERHASSEL FIELD ISSUE", cx, cy - 18);
+    ctx.fillText(place.name.replace(" · ", " / "), cx, cy + 40);
+
+    ctx.strokeStyle = theme.goldSoft;
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 4; i += 1) {
+      const y = cy - 24 + i * 22;
+      ctx.beginPath();
+      ctx.moveTo(cx + 112, y);
+      ctx.quadraticCurveTo(cx + 158, y + 6, cx + 190, y - 4);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 
   function drawMicroMatrix(x, y, size, seedText) {
@@ -426,10 +509,13 @@
         paperShadow: "#e1d6ca",
         card: "#141414",
         edge: "rgba(255,255,255,0.08)",
+        innerEdge: "rgba(255,255,255,0.03)",
         text: "#f2eee7",
         muted: "rgba(242,238,231,0.72)",
         poetry: "rgba(242,238,231,0.64)",
-        rule: "rgba(242,238,231,0.28)"
+        rule: "rgba(242,238,231,0.28)",
+        gold: "rgba(236, 205, 135, 0.92)",
+        goldSoft: "rgba(236, 205, 135, 0.46)"
       };
     }
     return {
@@ -437,10 +523,13 @@
       paperShadow: "#ece6dd",
       card: "#f2ede4",
       edge: "rgba(0,0,0,0.08)",
+      innerEdge: "rgba(0,0,0,0.04)",
       text: "#171717",
       muted: "rgba(23,23,23,0.62)",
       poetry: "rgba(23,23,23,0.52)",
-      rule: "rgba(23,23,23,0.22)"
+      rule: "rgba(23,23,23,0.22)",
+      gold: "rgba(169, 123, 33, 0.92)",
+      goldSoft: "rgba(169, 123, 33, 0.42)"
     };
   }
 
