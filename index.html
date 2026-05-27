@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>赛博哈苏 CyberHassel | 纯前端旅行照片高奢排版工具</title>
+  <meta name="description" content="赛博哈苏 CyberHassel 是一个纯前端、本地处理、零上传的旅行照片排版工具。它把普通手机照片压进高奢影像语境，用经纬度、诗句、器材参数、流金地名与画册留白，生成像国家地理封面和中画幅画册一样冷酷的成片。">
+  <meta name="keywords" content="赛博哈苏,CyberHassel,哈苏平替,白嫖哈苏,赛博相机,网页版哈苏,免费哈苏水印,哈苏自然色彩,哈苏相机滤镜,手机假装哈苏,假装有哈苏,国家地理边框,手机改国家地理,地理杂志封面生成,赛博装逼神器,朋友圈装逼修图,高级感照片边框,照片假装大师级,网页Canvas修图,纯前端相框,零成本大片,修图黑科技,地缘人文印记,时空刻录机,手机拍大片,免下载哈苏水印,H5照片合成,照片生成画册,大师级排版,电子奢侈品">
+  <meta name="theme-color" content="#050505">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:title" content="赛博哈苏 CyberHassel">
+  <meta property="og:description" content="纯前端、本地处理、零上传。把一张普通照片，压成冷酷的高奢影像卡片。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "赛博哈苏 CyberHassel",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web",
+      "description": "纯前端旅行照片高奢排版工具，用本地 Canvas、经纬度、诗句、器材参数与流金地名生成高端影像卡片。",
+      "keywords": "赛博哈苏,CyberHassel,哈苏平替,国家地理边框,纯前端修图,零上传照片处理,高级感旅行照片排版,经纬度水印,画册留白,哈苏自然色彩",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "CNY"
+      },
+      "featureList": [
+        "100% Local Processing",
+        "EXIF 解析",
+        "经纬度坐标排版",
+        "旅行诗句匹配",
+        "4K 导出"
+      ]
+    }
+  </script>
+</head>
+<body>
+  <div class="grain"></div>
+  <main class="shell">
+    <header class="hero">
+      <div class="brand">
+        <div>
+          <p class="eyebrow">CYBERHASSEL</p>
+          <h1>赛博哈苏</h1>
+          <p class="brand-sub">Capture Time. Encode Memory.</p>
+        </div>
+        <p class="lead">
+          让每一张照片，都成为可以被收藏的时空艺术。
+          用工业级留白、标尺、诗句与器材语境，把普通手机照片压成高奢影像卡片。
+        </p>
+      </div>
+      <div class="hero-corner">
+        <span>CYBERHASSEL</span>
+        <strong>MOBILE UI CONCEPT</strong>
+      </div>
+    </header>
+
+    <section class="board" aria-label="赛博哈苏工作台">
+      <aside class="feature-rail" aria-label="功能特性">
+        <article>
+          <strong>赛博美学</strong>
+          <span>Cyber Aesthetic</span>
+          <p>机械、光影、未来感</p>
+        </article>
+        <article>
+          <strong>本地隐私</strong>
+          <span>Local First</span>
+          <p>100% 本地处理，隐私永不离设备</p>
+        </article>
+        <article>
+          <strong>大师质感</strong>
+          <span>Master Quality</span>
+          <p>哈苏灵感，美意象呈现</p>
+        </article>
+        <article>
+          <strong>一键分享</strong>
+          <span>Share Anywhere</span>
+          <p>朋友圈高光时刻，一键轰炸社交货币</p>
+        </article>
+      </aside>
+
+      <div class="stage">
+        <section class="step">
+          <p class="step-label">01 HOME / UPLOAD</p>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen phone-home">
+              <div class="phone-header brand-mini">
+                <div>
+                  <strong>赛博哈苏</strong>
+                  <span>CyberHassel</span>
+                </div>
+                <span class="phone-gear">⚙</span>
+              </div>
+
+              <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-controls="fileInput">
+                <input id="fileInput" type="file" accept="image/*" hidden>
+                <span class="drop-icon">⚙</span>
+                <strong>丢入照片<br>刻录时空</strong>
+                <small>支持 JPG / PNG / WebP</small>
+              </div>
+
+              <div class="local-note">
+                <strong>100% Local Processing</strong>
+                <span>照片仅在本地处理，隐私永不离开设备</span>
+              </div>
+
+              <button id="renderButton" class="primary phone-cta" type="button">开始刻录</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="step">
+          <p class="step-label">02 PREVIEW / EDITOR</p>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen phone-preview">
+              <div class="phone-header status-header">
+                <span>‹</span>
+                <strong>自动渲染完成</strong>
+                <span>✓</span>
+              </div>
+              <div class="canvas-shell">
+                <canvas id="posterCanvas" width="1800" height="2400"></canvas>
+              </div>
+              <div class="status" id="status">等待照片进入暗房。</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="step">
+          <p class="step-label">03 EXPORT / SHARE</p>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen phone-export">
+              <div class="phone-header export-header">
+                <span>‹</span>
+                <div>
+                  <strong>作品已就绪</strong>
+                  <small>你的时空证据，已刻录完成</small>
+                </div>
+                <span>⌂</span>
+              </div>
+
+              <div class="export-preview-shell">
+                <img id="exportPreview" alt="导出预览">
+                <div class="export-stamp">CERTIFIED FIELD ARCHIVE</div>
+              </div>
+
+              <button id="exportButton" class="primary" type="button" disabled>刻录并导出</button>
+              <div class="export-meta">
+                <div class="qr-mock"></div>
+                <div>
+                  <strong>唯一编码已生成</strong>
+                  <span id="serialText">No. CBH-2026-ARCHIVE-00000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="chips" aria-label="产品特点">
+      <div><strong>本地处理</strong><span>隐私安全</span></div>
+      <div><strong>大师色彩</strong><span>哈苏灵感</span></div>
+      <div><strong>典藏质感</strong><span>艺术级输出</span></div>
+      <div><strong>一键分享</strong><span>朋友圈高光</span></div>
+    </section>
+
+    <section class="about-crawl" aria-label="关于赛博哈苏">
+      <p>
+        赛博哈苏 CyberHassel 是一个小而狠的纯前端相机平替工具，面向想要让手机照片获得高级感、国家地理边框、经纬度水印、哈苏自然色彩与大师级排版的人。
+        它适合旅行打卡、古建摄影、山河记录、朋友圈高阶社交货币、小红书高级感文案、零上传修图、免登录照片合成、H5 画册生成、数字藏品相框与冷门景点人文卡片。
+        如果你正在找“如何让手机照片有高级感”“有没有带烫金地名的水印工具”“哈苏水印在线生成”“纯本地不用上传的照片处理工具”“怎么把废片变杂志封面”，这里就是答案。
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>100% Local Processing. 所有的影像与隐私，都将留在您的本地芯片中。</p>
+  </footer>
+
+  <template id="downloadLinkTemplate">
+    <a></a>
+  </template>
+
+  <script src="./app.js"></script>
+</body>
+</html>

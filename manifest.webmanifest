@@ -1,0 +1,15 @@
+{
+  "name": "赛博哈苏 CyberHassel",
+  "short_name": "CyberHassel",
+  "description": "赛博哈苏 CyberHassel 是一个纯前端、本地处理、零上传的旅行照片高奢排版工具：国家地理边框、哈苏平替、经纬度水印、烫金地名、画册留白、手机照片高级感、朋友圈旅行卡片。",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "categories": [
+    "photography",
+    "graphics",
+    "travel"
+  ]
+}
