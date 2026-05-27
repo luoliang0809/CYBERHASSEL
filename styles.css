@@ -350,6 +350,19 @@ button:disabled {
   box-shadow: 0 10px 28px rgba(247, 225, 162, 0.22);
 }
 
+.overlay-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.ghost {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .phone-cta {
   width: 100%;
   margin-top: 28px;
@@ -386,15 +399,19 @@ button:disabled {
 .canvas-shell {
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 10px;
   border-radius: 20px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02)),
     rgba(0, 0, 0, 0.24);
+  min-height: 0;
 }
 
 canvas {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
   height: auto;
   display: block;
   border-radius: 12px;
@@ -403,19 +420,24 @@ canvas {
 
 .export-preview-shell {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
   border-radius: 20px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02)),
     rgba(0, 0, 0, 0.24);
+  min-height: 0;
 }
 
 .export-preview-shell img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
   display: block;
   border-radius: 12px;
-  min-height: 520px;
-  object-fit: cover;
   background: #0b0b0b;
 }
 
@@ -470,11 +492,69 @@ canvas {
   line-height: 1.6;
 }
 
+.inline-save-panel {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(214, 177, 107, 0.16);
+}
+
+.inline-save-panel[hidden] {
+  display: none;
+}
+
+.inline-save-panel strong,
+.inline-save-panel span {
+  display: block;
+}
+
+.inline-save-panel strong {
+  color: #f1dfba;
+  margin-bottom: 6px;
+}
+
+.inline-save-panel span {
+  color: rgba(242, 238, 231, 0.72);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.inline-save-panel img {
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  background: #0b0b0b;
+  margin-bottom: 12px;
+}
+
+.inline-download {
+  width: 100%;
+}
+
 .chips {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   margin-top: 22px;
+}
+
+.phone-preview,
+.phone-export {
+  display: flex;
+  flex-direction: column;
+}
+
+.phone-preview .canvas-shell {
+  flex: 1;
+}
+
+.phone-export .export-preview-shell {
+  flex: 1;
+}
+
+.phone-export .primary {
+  margin-top: 14px;
 }
 
 .about-crawl {
@@ -499,6 +579,90 @@ canvas {
   letter-spacing: 0.1em;
 }
 
+.export-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(10px);
+}
+
+.export-overlay[hidden] {
+  display: none;
+}
+
+.export-dialog {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  border-radius: 28px;
+  border: 1px solid rgba(214, 177, 107, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03)),
+    #090909;
+  box-shadow: 0 28px 100px rgba(0, 0, 0, 0.5);
+}
+
+.export-dialog-head,
+.export-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 22px;
+}
+
+.export-dialog-head strong,
+.export-dialog-head span {
+  display: block;
+}
+
+.export-dialog-head strong {
+  color: #f1dfba;
+  font-size: 22px;
+}
+
+.export-dialog-head span {
+  margin-top: 6px;
+  color: rgba(242, 238, 231, 0.72);
+  line-height: 1.6;
+}
+
+.overlay-close {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+  color: #f1dfba;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.export-dialog-body {
+  padding: 0 22px 22px;
+}
+
+.export-dialog-body img {
+  width: 100%;
+  display: block;
+  border-radius: 20px;
+  background: #0b0b0b;
+}
+
+.export-dialog-actions {
+  padding-top: 0;
+}
+
+.overlay-download,
+.overlay-secondary {
+  flex: 1;
+}
+
 @media (max-width: 800px) {
   .shell {
     padding-top: 32px;
@@ -521,6 +685,14 @@ canvas {
   .stage,
   .chips {
     grid-template-columns: 1fr;
+  }
+
+  .feature-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .export-dialog-actions {
+    flex-direction: column;
   }
 
   button {

@@ -159,6 +159,12 @@
                   <span id="serialText">No. CBH-2026-ARCHIVE-00000</span>
                 </div>
               </div>
+              <div class="inline-save-panel" id="inlineSavePanel" hidden>
+                <strong>保存区已展开</strong>
+                <span>长按下方大图保存；如果浏览器支持，也可以点下载 PNG。</span>
+                <img id="inlineSaveImage" alt="页面内导出大图预览">
+                <a id="inlineDownloadLink" class="primary inline-download" download="cyberhassel.png">下载 PNG</a>
+              </div>
             </div>
           </div>
         </section>
@@ -184,6 +190,25 @@
   <footer class="footer">
     <p>100% Local Processing. 所有的影像与隐私，都将留在您的本地芯片中。</p>
   </footer>
+
+  <div class="export-overlay" id="exportOverlay" hidden aria-hidden="true">
+    <div class="export-dialog" role="dialog" aria-modal="true" aria-labelledby="exportDialogTitle">
+      <div class="export-dialog-head">
+        <div>
+          <strong id="exportDialogTitle">刻录完成</strong>
+          <span>长按图片保存；如果设备支持，也可以直接点下载。</span>
+        </div>
+        <button id="closeOverlayButton" class="overlay-close" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="export-dialog-body">
+        <img id="exportResultImage" alt="导出成片预览">
+      </div>
+      <div class="export-dialog-actions">
+        <a id="downloadResultLink" class="primary overlay-download" download="cyberhassel.png">下载 PNG</a>
+        <button id="closeOverlayFooterButton" class="ghost overlay-secondary" type="button">返回继续看</button>
+      </div>
+    </div>
+  </div>
 
   <template id="downloadLinkTemplate">
     <a></a>

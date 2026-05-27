@@ -110,8 +110,17 @@
   const status = document.getElementById("status");
   const exportPreview = document.getElementById("exportPreview");
   const serialText = document.getElementById("serialText");
+  const exportOverlay = document.getElementById("exportOverlay");
+  const exportResultImage = document.getElementById("exportResultImage");
+  const downloadResultLink = document.getElementById("downloadResultLink");
+  const inlineSavePanel = document.getElementById("inlineSavePanel");
+  const inlineSaveImage = document.getElementById("inlineSaveImage");
+  const inlineDownloadLink = document.getElementById("inlineDownloadLink");
+  const closeOverlayButton = document.getElementById("closeOverlayButton");
+  const closeOverlayFooterButton = document.getElementById("closeOverlayFooterButton");
   const canvas = document.getElementById("posterCanvas");
   const ctx = canvas.getContext("2d");
+  let exportObjectUrl = "";
 
   bindEvents();
   renderPlaceholder();
@@ -155,6 +164,11 @@
     });
 
     exportButton.addEventListener("click", exportPoster);
+    closeOverlayButton.addEventListener("click", closeExportOverlay);
+    closeOverlayFooterButton.addEventListener("click", closeExportOverlay);
+    exportOverlay.addEventListener("click", (event) => {
+      if (event.target === exportOverlay) closeExportOverlay();
+    });
   }
 
   async function handleFile(file) {
@@ -263,7 +277,7 @@
 
   function drawPhoto(area) {
     const img = state.image;
-    const ratio = Math.min(area.w / img.width, area.h / img.height);
+    const ratio = Math.max(area.w / img.width, area.h / img.height);
     const drawW = img.width * ratio;
     const drawH = img.height * ratio;
     const dx = area.x + (area.w - drawW) / 2;
@@ -550,11 +564,75 @@
   }
 
   function exportPoster() {
+    const filename = `cyberhassel-${Date.now()}.png`;
+
+    try {
+      const dataUrl = canvas.toDataURL("image/png");
+      exportResultImage.src = dataUrl;
+      downloadResultLink.href = dataUrl;
+      downloadResultLink.download = filename;
+      revealInlineSave(dataUrl, filename);
+      openExportOverlay();
+      attemptDownload(dataUrl, filename);
+      setStatus("成片已准备好。若浏览器不自动下载，请长按弹出的图片保存。");
+      return;
+    } catch (error) {
+      // Fall through to blob export for browsers that reject data URLs.
+    }
+
+    if (typeof canvas.toBlob !== "function") {
+      setStatus("当前浏览器不支持这一步导出。请截图发我，我继续给你兜底。");
+      return;
+    }
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        setStatus("导出失败了，这次不是你的问题。请再点一次，或者截图发我继续修。");
+        return;
+      }
+
+      if (exportObjectUrl) {
+        URL.revokeObjectURL(exportObjectUrl);
+      }
+
+      exportObjectUrl = URL.createObjectURL(blob);
+      exportResultImage.src = exportObjectUrl;
+      downloadResultLink.href = exportObjectUrl;
+      downloadResultLink.download = filename;
+      revealInlineSave(exportObjectUrl, filename);
+      openExportOverlay();
+      attemptDownload(exportObjectUrl, filename);
+      setStatus("成片已准备好。若浏览器不自动下载，请长按弹出的图片保存。");
+    }, "image/png");
+  }
+
+  function attemptDownload(url, filename) {
     const link = document.getElementById("downloadLinkTemplate").content.firstElementChild.cloneNode(true);
-    link.href = canvas.toDataURL("image/png");
-    link.download = `cyberhassel-${Date.now()}.png`;
+    link.href = url;
+    link.download = filename;
+    link.target = "_blank";
+    link.rel = "noopener";
+    document.body.appendChild(link);
     link.click();
-    setStatus("已导出 PNG。现在可以把它发去朋友圈制造误会了。");
+    link.remove();
+  }
+
+  function openExportOverlay() {
+    exportOverlay.hidden = false;
+    exportOverlay.setAttribute("aria-hidden", "false");
+  }
+
+  function closeExportOverlay() {
+    exportOverlay.hidden = true;
+    exportOverlay.setAttribute("aria-hidden", "true");
+  }
+
+  function revealInlineSave(url, filename) {
+    inlineSaveImage.src = url;
+    inlineDownloadLink.href = url;
+    inlineDownloadLink.download = filename;
+    inlineSavePanel.hidden = false;
+    inlineSavePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function syncExportPreview(serial) {
